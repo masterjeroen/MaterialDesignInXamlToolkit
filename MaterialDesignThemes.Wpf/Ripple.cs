@@ -37,7 +37,7 @@ namespace MaterialDesignThemes.Wpf
         {
             foreach (var ripple in PressedInstances)
             {
-                ripple.Dispatcher.Invoke(() =>
+                ripple.Dispatcher.InvokeAsync(() =>
                 {
                     // adjust the transition scale time according to the current animated scale
                     var scaleTrans = ripple.Template.FindName("ScaleTransform", ripple) as ScaleTransform;
@@ -68,7 +68,7 @@ namespace MaterialDesignThemes.Wpf
         {
             foreach (var ripple in PressedInstances.ToList())
             {
-                ripple.Dispatcher.Invoke(() =>
+                ripple.Dispatcher.InvokeAsync(() =>
                 {
                     var relativePosition = Mouse.GetPosition(ripple);
                     if (relativePosition.X < 0
