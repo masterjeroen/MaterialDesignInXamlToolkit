@@ -37,26 +37,29 @@ namespace MaterialDesignThemes.Wpf
         {
             foreach (var ripple in PressedInstances)
             {
-                // adjust the transition scale time according to the current animated scale
-                var scaleTrans = ripple.Template.FindName("ScaleTransform", ripple) as ScaleTransform;
-                if (scaleTrans != null)
+                ripple.Dispatcher.Invoke(() =>
                 {
-                    double currentScale = scaleTrans.ScaleX;
-                    var newTime = TimeSpan.FromMilliseconds(300 * (1.0 - currentScale));
-
-                    // change the scale animation according to the current scale
-                    var scaleXKeyFrame = ripple.Template.FindName("MousePressedToNormalScaleXKeyFrame", ripple) as EasingDoubleKeyFrame;
-                    if (scaleXKeyFrame != null)
+                    // adjust the transition scale time according to the current animated scale
+                    var scaleTrans = ripple.Template.FindName("ScaleTransform", ripple) as ScaleTransform;
+                    if (scaleTrans != null)
                     {
-                        scaleXKeyFrame.KeyTime = KeyTime.FromTimeSpan(newTime);
-                    }
-                    var scaleYKeyFrame = ripple.Template.FindName("MousePressedToNormalScaleYKeyFrame", ripple) as EasingDoubleKeyFrame;
-                    if (scaleYKeyFrame != null) {
-                        scaleYKeyFrame.KeyTime = KeyTime.FromTimeSpan(newTime);
-                    }
-                }
+                        double currentScale = scaleTrans.ScaleX;
+                        var newTime = TimeSpan.FromMilliseconds(300 * (1.0 - currentScale));
 
-                VisualStateManager.GoToState(ripple, TemplateStateNormal, true);
+                        // change the scale animation according to the current scale
+                        var scaleXKeyFrame = ripple.Template.FindName("MousePressedToNormalScaleXKeyFrame", ripple) as EasingDoubleKeyFrame;
+                        if (scaleXKeyFrame != null)
+                        {
+                            scaleXKeyFrame.KeyTime = KeyTime.FromTimeSpan(newTime);
+                        }
+                        var scaleYKeyFrame = ripple.Template.FindName("MousePressedToNormalScaleYKeyFrame", ripple) as EasingDoubleKeyFrame;
+                        if (scaleYKeyFrame != null) {
+                            scaleYKeyFrame.KeyTime = KeyTime.FromTimeSpan(newTime);
+                        }
+                    }
+
+                    VisualStateManager.GoToState(ripple, TemplateStateNormal, true);
+                });
             }
             PressedInstances.Clear();
         }
@@ -65,16 +68,19 @@ namespace MaterialDesignThemes.Wpf
         {
             foreach (var ripple in PressedInstances.ToList())
             {
-                var relativePosition = Mouse.GetPosition(ripple);
-                if (relativePosition.X < 0
-                    || relativePosition.Y < 0
-                    || relativePosition.X >= ripple.ActualWidth
-                    || relativePosition.Y >= ripple.ActualHeight)
-
+                ripple.Dispatcher.Invoke(() =>
                 {
-                    VisualStateManager.GoToState(ripple, TemplateStateMouseOut, true);
-                    PressedInstances.Remove(ripple);
-                }
+                    var relativePosition = Mouse.GetPosition(ripple);
+                    if (relativePosition.X < 0
+                        || relativePosition.Y < 0
+                        || relativePosition.X >= ripple.ActualWidth
+                        || relativePosition.Y >= ripple.ActualHeight)
+
+                    {
+                        VisualStateManager.GoToState(ripple, TemplateStateMouseOut, true);
+                        PressedInstances.Remove(ripple);
+                    }
+                });
             }
         }        
 
